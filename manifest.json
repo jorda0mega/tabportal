@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Tab Portal",
+  "version": "1.0.0",
+  "description": "Quickly search and switch between open tabs with fuzzy matching",
+  "permissions": ["tabs", "scripting"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "commands": {
+    "open-tab-portal": {
+      "suggested_key": {
+        "default": "Ctrl+E",
+        "mac": "Command+E"
+      },
+      "description": "Open Tab Portal"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

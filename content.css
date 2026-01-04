@@ -1,0 +1,217 @@
+#tab-portal-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2147483647;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  font-size: 13px;
+}
+
+#tab-portal-modal.tab-portal-visible {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 15vh;
+}
+
+#tab-portal-modal * {
+  box-sizing: border-box;
+}
+
+.tab-portal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.tab-portal-container {
+  position: relative;
+  width: 580px;
+  max-height: 70vh;
+  background: #1a1a1a;
+  border-radius: 12px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: tab-portal-slide-in 0.15s ease-out;
+}
+
+@keyframes tab-portal-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.tab-portal-search-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  border-bottom: 1px solid #2a2a2a;
+  background: #1a1a1a;
+}
+
+.tab-portal-search-icon {
+  color: #666;
+  flex-shrink: 0;
+}
+
+.tab-portal-search {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #e5e5e5;
+  font-size: 15px;
+  font-family: inherit;
+}
+
+.tab-portal-search::placeholder {
+  color: #666;
+}
+
+.tab-portal-shortcut-hint {
+  font-size: 11px;
+  color: #555;
+  padding: 3px 8px;
+  background: #252525;
+  border-radius: 5px;
+  flex-shrink: 0;
+}
+
+.tab-portal-tabs-list {
+  overflow-y: auto;
+  flex: 1;
+  padding: 8px;
+  max-height: calc(70vh - 60px);
+}
+
+.tab-portal-tab-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.1s ease;
+}
+
+.tab-portal-tab-item:hover,
+.tab-portal-tab-item.selected {
+  background: #2a2a2a;
+}
+
+.tab-portal-tab-item.selected {
+  background: #333;
+}
+
+.tab-portal-tab-favicon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border-radius: 3px;
+  object-fit: contain;
+}
+
+.tab-portal-tab-favicon-placeholder {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  background: #333;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.tab-portal-tab-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.tab-portal-tab-title {
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #e5e5e5;
+}
+
+.tab-portal-tab-url {
+  font-size: 11px;
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tab-portal-tab-window-badge {
+  font-size: 10px;
+  color: #555;
+  padding: 3px 8px;
+  background: #252525;
+  border-radius: 5px;
+  flex-shrink: 0;
+}
+
+.tab-portal-tab-active-indicator {
+  width: 7px;
+  height: 7px;
+  background: #4ade80;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tab-portal-empty-state {
+  padding: 50px 20px;
+  text-align: center;
+  color: #666;
+}
+
+.tab-portal-hidden {
+  display: none !important;
+}
+
+#tab-portal-modal mark {
+  background: transparent;
+  color: #60a5fa;
+  font-weight: 600;
+}
+
+.tab-portal-tabs-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.tab-portal-tabs-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tab-portal-tabs-list::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}
+
+.tab-portal-tabs-list::-webkit-scrollbar-thumb:hover {
+  background: #444;
+}
