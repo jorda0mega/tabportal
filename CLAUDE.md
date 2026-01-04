@@ -17,20 +17,31 @@ To reload after code changes: Click the refresh icon on the extension card in `c
 
 ## Architecture
 
-This is a Manifest V3 Chrome extension with no build step. Uses content script injection for a centered modal overlay.
+Manifest V3 Chrome extension with no build step. Uses content script injection for a centered modal overlay, with popup window fallback for restricted pages.
 
 **Key files:**
 - `manifest.json` - Extension config, permissions (`tabs`, `scripting`), keyboard shortcut
-- `background.js` - Service worker that handles shortcut, injects scripts, queries tabs
-- `content.js` - Injected script that creates/manages the modal UI
-- `content.css` - Styles for the centered command palette overlay
+- `background.js` - Service worker: handles shortcut, injects scripts, queries tabs, manages tab operations
+- `content.js` / `content.css` - Injected modal UI for normal pages
+- `popup.html` / `popup.js` - Fallback UI for restricted pages (`chrome://`, Web Store, etc.)
 
 **Flow:**
 1. `Cmd+E` triggers `background.js` via `chrome.commands.onCommand`
-2. Background injects `content.js` + `content.css` into active tab
-3. Content script requests tabs via message to background (`getTabs`)
-4. User searches → `fuzzyMatch()` filters/scores tabs
-5. Selection sends `switchToTab` message → background calls `chrome.tabs.update()`
+2. Background checks if URL is restricted → opens popup window if so
+3. Otherwise injects `content.js` + `content.css` into active tab
+4. Content script requests tabs via message to background (`getTabs`)
+5. User searches → `fuzzyMatch()` filters/scores tabs
+6. Actions send messages to background: `switchToTab`, `deleteTab`
+
+**Keyboard shortcuts:**
+- `↑/↓` or `Ctrl+K/J` - Navigate list
+- `Enter` - Switch to tab
+- `Ctrl+Delete/Backspace` - Close tab
+- `Esc` - Close palette
+
+**Sorting:**
+- Default: `lastAccessed` descending (most recent first)
+- Searching: fuzzy match `score` descending (best match first)
 
 **Fuzzy search** (`fuzzyMatch()`):
 - Matches characters in sequence (not necessarily adjacent)
