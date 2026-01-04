@@ -1,8 +1,31 @@
+// Check if URL is restricted (can't inject content scripts)
+function isRestrictedUrl(url) {
+  return !url ||
+    url.startsWith('chrome://') ||
+    url.startsWith('chrome-extension://') ||
+    url.startsWith('https://chrome.google.com/webstore') ||
+    url.startsWith('edge://') ||
+    url.startsWith('about:');
+}
+
 // Listen for keyboard shortcut
 chrome.commands.onCommand.addListener(async (command) => {
   if (command === 'open-tab-portal') {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (!tab?.id) return;
+
+    // Check for restricted URLs
+    if (isRestrictedUrl(tab.url)) {
+      // Open as popup window instead
+      chrome.windows.create({
+        url: 'popup.html',
+        type: 'popup',
+        width: 600,
+        height: 500,
+        focused: true
+      });
+      return;
+    }
 
     // Try to toggle existing modal first
     try {
@@ -40,6 +63,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     chrome.windows.update(message.windowId, { focused: true });
     sendResponse({ success: true });
   }
+
+  if (message.action === 'deleteTab') {
+    chrome.tabs.remove(message.tabId).then(() => {
+      sendResponse({ success: true });
+    }).catch(() => {
+      sendResponse({ success: false });
+    });
+    return true;
+  }
 });
 
 async function getAllTabs() {
@@ -58,6 +90,7 @@ async function getAllTabs() {
     url: tab.url || '',
     favIconUrl: tab.favIconUrl,
     active: tab.active,
+    lastAccessed: tab.lastAccessed || 0,
     windowName: windowNames.get(tab.windowId) || 'Window'
   }));
 }

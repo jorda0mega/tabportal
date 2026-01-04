@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tab Portal</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      font-size: 13px;
+      background: #1a1a1a;
+      color: #e5e5e5;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .search-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 18px;
+      border-bottom: 1px solid #2a2a2a;
+      background: #1a1a1a;
+    }
+
+    .search-icon {
+      color: #666;
+      flex-shrink: 0;
+    }
+
+    #search {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #e5e5e5;
+      font-size: 15px;
+      font-family: inherit;
+    }
+
+    #search::placeholder {
+      color: #666;
+    }
+
+    .shortcut-hint {
+      font-size: 11px;
+      color: #555;
+      padding: 3px 8px;
+      background: #252525;
+      border-radius: 5px;
+      flex-shrink: 0;
+    }
+
+    .tabs-list {
+      overflow-y: auto;
+      flex: 1;
+      padding: 8px;
+    }
+
+    .tab-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.1s ease;
+    }
+
+    .tab-item:hover,
+    .tab-item.selected {
+      background: #2a2a2a;
+    }
+
+    .tab-item.selected {
+      background: #333;
+    }
+
+    .tab-favicon {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      border-radius: 3px;
+      object-fit: contain;
+    }
+
+    .tab-favicon-placeholder {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      background: #333;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #666;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .tab-info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .tab-title {
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: #e5e5e5;
+    }
+
+    .tab-url {
+      font-size: 11px;
+      color: #666;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tab-window-badge {
+      font-size: 10px;
+      color: #555;
+      padding: 3px 8px;
+      background: #252525;
+      border-radius: 5px;
+      flex-shrink: 0;
+    }
+
+    .tab-active-indicator {
+      width: 7px;
+      height: 7px;
+      background: #4ade80;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .tab-delete {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      border: none;
+      background: transparent;
+      color: #555;
+      border-radius: 4px;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.1s ease, background 0.1s ease, color 0.1s ease;
+      flex-shrink: 0;
+    }
+
+    .tab-item:hover .tab-delete,
+    .tab-item.selected .tab-delete {
+      opacity: 1;
+    }
+
+    .tab-delete:hover {
+      background: #3a3a3a;
+      color: #ef4444;
+    }
+
+    .empty-state {
+      padding: 50px 20px;
+      text-align: center;
+      color: #666;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    mark {
+      background: transparent;
+      color: #60a5fa;
+      font-weight: 600;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #333;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #444;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="search-wrapper">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.35-4.35"></path>
+      </svg>
+      <input type="text" id="search" placeholder="Search tabs..." autofocus>
+      <span class="shortcut-hint">esc to close</span>
+    </div>
+    <div id="tabs-list" class="tabs-list"></div>
+    <div id="empty-state" class="empty-state hidden">No matching tabs</div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

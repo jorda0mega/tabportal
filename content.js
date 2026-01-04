@@ -76,11 +76,8 @@ if (window.__tabPortal) {
         searchText: `${tab.title} ${tab.url}`.toLowerCase()
       }));
 
-      allTabs.sort((a, b) => {
-        if (a.active && !b.active) return -1;
-        if (!a.active && b.active) return 1;
-        return 0;
-      });
+      // Sort by last accessed (most recent first)
+      allTabs.sort((a, b) => b.lastAccessed - a.lastAccessed);
 
       filteredTabs = [...allTabs];
       renderTabs();
@@ -155,7 +152,8 @@ if (window.__tabPortal) {
       const query = e.target.value.trim();
 
       if (!query) {
-        filteredTabs = [...allTabs];
+        // No query: show all tabs sorted by last accessed
+        filteredTabs = [...allTabs].sort((a, b) => b.lastAccessed - a.lastAccessed);
       } else {
         filteredTabs = allTabs
           .map(tab => {
@@ -176,10 +174,41 @@ if (window.__tabPortal) {
 
       selectedIndex = 0;
       renderTabs();
+      tabsList.scrollTop = 0;
     }
 
     function onKeyDown(e) {
       if (!modal || !modal.classList.contains('tab-portal-visible')) return;
+
+      // Ctrl+J - move down
+      if (e.key === 'j' && e.ctrlKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        selectedIndex = Math.min(selectedIndex + 1, filteredTabs.length - 1);
+        renderTabs();
+        scrollSelectedIntoView();
+        return;
+      }
+
+      // Ctrl+K - move up
+      if (e.key === 'k' && e.ctrlKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        selectedIndex = Math.max(selectedIndex - 1, 0);
+        renderTabs();
+        scrollSelectedIntoView();
+        return;
+      }
+
+      // Ctrl+Backspace or Ctrl+Delete - delete selected tab
+      if ((e.key === 'Backspace' || e.key === 'Delete') && e.ctrlKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (filteredTabs[selectedIndex]) {
+          deleteTab(filteredTabs[selectedIndex]);
+        }
+        return;
+      }
 
       switch (e.key) {
         case 'ArrowDown':
@@ -230,6 +259,24 @@ if (window.__tabPortal) {
       hideModal();
     }
 
+    async function deleteTab(tab) {
+      await chrome.runtime.sendMessage({
+        action: 'deleteTab',
+        tabId: tab.id
+      });
+
+      // Remove from arrays
+      allTabs = allTabs.filter(t => t.id !== tab.id);
+      filteredTabs = filteredTabs.filter(t => t.id !== tab.id);
+
+      // Adjust selected index if needed
+      if (selectedIndex >= filteredTabs.length) {
+        selectedIndex = Math.max(0, filteredTabs.length - 1);
+      }
+
+      renderTabs();
+    }
+
     function getDisplayUrl(url) {
       try {
         const parsed = new URL(url);
@@ -272,12 +319,20 @@ if (window.__tabPortal) {
             </div>
             <span class="tab-portal-tab-window-badge">${escapeHtml(tab.windowName)}</span>
             ${tab.active ? '<div class="tab-portal-tab-active-indicator"></div>' : ''}
+            <button class="tab-portal-tab-delete" data-tab-id="${tab.id}" title="Close tab (Ctrl+Delete)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 6L6 18"></path>
+                <path d="M6 6l12 12"></path>
+              </svg>
+            </button>
           </div>
         `;
       }).join('');
 
       tabsList.querySelectorAll('.tab-portal-tab-item').forEach(item => {
-        item.addEventListener('click', () => {
+        item.addEventListener('click', (e) => {
+          // Don't switch if clicking delete button
+          if (e.target.closest('.tab-portal-tab-delete')) return;
           const index = parseInt(item.dataset.index, 10);
           switchToTab(filteredTabs[index]);
         });
@@ -285,6 +340,16 @@ if (window.__tabPortal) {
         item.addEventListener('mouseenter', () => {
           selectedIndex = parseInt(item.dataset.index, 10);
           renderTabs();
+        });
+      });
+
+      // Delete button handlers
+      tabsList.querySelectorAll('.tab-portal-tab-delete').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const tabId = parseInt(btn.dataset.tabId, 10);
+          const tab = filteredTabs.find(t => t.id === tabId);
+          if (tab) deleteTab(tab);
         });
       });
     }
