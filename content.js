@@ -38,7 +38,23 @@ if (window.__tabPortal) {
 
       searchInput.addEventListener('input', onSearch);
       modal.querySelector('.tab-portal-backdrop').addEventListener('click', hideModal);
-      document.addEventListener('keydown', onKeyDown);
+
+      // Use capture phase to intercept events before other handlers
+      document.addEventListener('keydown', onKeyDown, true);
+
+      // Prevent all events from bubbling out of the modal
+      modal.addEventListener('keydown', (e) => {
+        e.stopPropagation();
+      }, true);
+      modal.addEventListener('keyup', (e) => {
+        e.stopPropagation();
+      }, true);
+      modal.addEventListener('keypress', (e) => {
+        e.stopPropagation();
+      }, true);
+      modal.addEventListener('input', (e) => {
+        e.stopPropagation();
+      }, true);
     }
 
     function toggle() {
@@ -60,7 +76,12 @@ if (window.__tabPortal) {
       searchInput.value = '';
       selectedIndex = 0;
       loadTabs();
+
+      // Aggressively focus the search input
+      searchInput.focus();
       setTimeout(() => searchInput.focus(), 10);
+      setTimeout(() => searchInput.focus(), 50);
+      setTimeout(() => searchInput.focus(), 100);
     }
 
     function hideModal() {
