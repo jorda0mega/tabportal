@@ -42,19 +42,13 @@ if (window.__tabPortal) {
       // Use capture phase to intercept events before other handlers
       document.addEventListener('keydown', onKeyDown, true);
 
-      // Prevent all events from bubbling out of the modal
-      modal.addEventListener('keydown', (e) => {
-        e.stopPropagation();
-      }, true);
-      modal.addEventListener('keyup', (e) => {
-        e.stopPropagation();
-      }, true);
-      modal.addEventListener('keypress', (e) => {
-        e.stopPropagation();
-      }, true);
-      modal.addEventListener('input', (e) => {
-        e.stopPropagation();
-      }, true);
+      // Prevent keyboard events from bubbling out of the modal (bubble phase)
+      modal.addEventListener('keydown', (e) => e.stopPropagation());
+      modal.addEventListener('keyup', (e) => e.stopPropagation());
+      modal.addEventListener('keypress', (e) => e.stopPropagation());
+
+      // For input events, stop propagation in bubble phase only
+      searchInput.addEventListener('input', (e) => e.stopPropagation());
     }
 
     function toggle() {

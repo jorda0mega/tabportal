@@ -18,7 +18,10 @@
 }
 
 #tab-portal-modal * {
-  box-sizing: border-box;
+  box-sizing: border-box !important;
+  margin: 0;
+  padding: 0;
+  line-height: normal;
 }
 
 .tab-portal-backdrop {
@@ -71,17 +74,35 @@
 }
 
 .tab-portal-search {
-  flex: 1;
-  background: transparent;
-  border: none;
-  outline: none;
-  color: #e5e5e5;
-  font-size: 15px;
-  font-family: inherit;
+  flex: 1 !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  color: #e5e5e5 !important;
+  font-size: 15px !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-weight: 400 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+
+.tab-portal-search:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
 }
 
 .tab-portal-search::placeholder {
-  color: #666;
+  color: #666 !important;
+  opacity: 1 !important;
 }
 
 .tab-portal-shortcut-hint {
